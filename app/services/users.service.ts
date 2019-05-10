@@ -1,4 +1,4 @@
-import { User } from "../entity/user";
+import { User } from "../entity/user.entity";
 import { getManager } from "typeorm";
 
 
@@ -8,6 +8,11 @@ export class UsersService {
         console.log("Inserting a new user into the database...");
         const user = new User(uid, username, email, fullname, phone);
         let insert = getManager().getRepository(User).insert(user);
+    }
+    
+    async getAllUsers() {
+        let result = await getManager().getRepository(User).find()
+        return result
     }
 
     async getOneByUsername(username: string) {

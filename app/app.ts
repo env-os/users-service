@@ -21,6 +21,11 @@ app.post('/create', (req, res) => {
     res.send("User created successfully")
 })
 
+app.get('/get', async (req, res) => {
+    const user = await usersService.getAllUsers()
+    res.json(user)
+})
+
 app.get('/get/:username', async (req, res) => {
     const user = await usersService.getOneByUsername(req.params.username)
     res.json(user)
