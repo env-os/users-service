@@ -1,42 +1,27 @@
-import express = require('express');
-import { UsersService } from './services/users.service';
-import { createConnection } from 'typeorm';
-import bodyParser = require('body-parser');
-
-const app: express.Application = express();
-const usersService = new UsersService();
+import 'reflect-metadata';
+import { useContainer as typeormUseContainer, createConnection } from 'typeorm';
+import { Container } from 'typedi';
+import { createExpressServer, useContainer as routingUseContainer } from 'routing-controllers';
+import { UserController } from './controllers/user.controller';
 
 
-const connection = createConnection() // open db connection for all routes
-app.use(bodyParser.json())
+typeormUseContainer(Container)
+routingUseContainer(Container)
 
-app.post('/create', (req, res) => {
-    const test = usersService.create(
-        req.body.uid,
-        req.body.name,
-        req.body.email,
-        req.body.fullname,
-        req.body.phone
-    )
-    res.send("User created successfully")
-})
+const port = process.env.PORT || 3000;
 
-app.get('/get', async (req, res) => {
-    const user = await usersService.getAllUsers()
-    res.json(user)
-})
-
-app.get('/get/:username', async (req, res) => {
-    const user = await usersService.getOneByUsername(req.params.username)
-    res.json(user)
-})
-
-app.delete('/:username', (req, res) => {
-    usersService.delete(req.params.username);
-    res.send("User deleted successfully")
-})
-
-app.listen(process.env.PORT, function () {
-    console.log("Users module is listening on port " + process.env.PORT +"!");
-    
+const app = createExpressServer({
+    controllers: [UserController],
+    classTransformer: true,
+    validation: true
 });
+
+app.listen(port, () => {
+    console.log("User service listening on port " + port);
+})
+
+createConnection()
+.then(async connection => {
+    console.log("Database connection started successfully");
+})
+.catch(error => console.log(error))
