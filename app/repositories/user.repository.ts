@@ -5,7 +5,11 @@ import { User } from "../entities/user.entity";
 export class UserRepository extends AbstractRepository<User>{
 
     public async create(user: User): Promise<void> {
-        await this.repository.save(user);
+        try {
+            await this.repository.save(user);
+        } catch(err){
+            return Promise.reject(err);
+        }
     }
 
     public async delete(user: User): Promise<void> {
@@ -16,10 +20,9 @@ export class UserRepository extends AbstractRepository<User>{
         return await this.repository.find();
     }
 
-    public getOneByUsername(username: string): Promise<User | undefined>{
-        return this.repository.findOne({
-            where: { username: username }
+    public getOneByUuid(uuid: string): Promise<User> {
+        return this.repository.findOneOrFail({
+            where: {uuid: uuid}
         })
     }
-
 }

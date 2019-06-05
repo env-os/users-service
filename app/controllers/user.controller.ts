@@ -1,4 +1,4 @@
-import { Post, JsonController, Body, Get, Res, Param, Delete, Req, OnUndefined } from 'routing-controllers';
+import { Post, JsonController, Body, Get, Param, Delete, Req, OnUndefined, BadRequestError, HttpError, NotFoundError } from 'routing-controllers';
 import { UserService } from '../services/user.service';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities/user.entity';
@@ -13,36 +13,40 @@ export class UserController {
     
     @Post()
     @OnUndefined(201)
-    async create(@Body() userDto: UserDto, @Req() req: Request): Promise<void> {
+    public async create(@Body() userDto: UserDto, @Req() req: Request): Promise<void> {
         LogsUtil.logRequest(req);
-        await this.userService.create(userDto);
+        await this.userService.create(userDto)
+        .catch(() => {
+            throw new BadRequestError("Error during user creation.");
+        })
     }
 
-    @Delete('/:username')
+    @Delete('/:uuid')
     @OnUndefined(201)
-    async delete(@Param('username') username: string, @Req() req: Request) {
+    public async delete(@Param('uuid') uuid: string, @Req() req: Request) {
         LogsUtil.logRequest(req);
-        await this.userService.delete(username);
+        await this.userService.delete(uuid)
+        .catch(() => {
+            throw new HttpError(500);
+        })
     }
     @Get()
     @OnUndefined(404)
-    async getAll(@Req() req: Request): Promise<User[]> {
+    public async getAll(@Req() req: Request): Promise<User[]> {
         LogsUtil.logRequest(req);
-        return await this.userService.getAll();
+        return await this.userService.getAll()
+        .catch(() => {
+            throw new HttpError(500);
+        })
     }
 
-    @Get('/:username')
+    @Get('/:uuid')
     @OnUndefined(404)
-    async getOneByUsername(@Param('username') username: string, @Req() req: Request): Promise<User | undefined> {
+    public async getOneByUuid(@Param('uuid') uuid: string, @Req() req: Request): Promise<User> {
         LogsUtil.logRequest(req);
-        return await this.userService.getOneByUsername(username);
-    }
-
-
-    @Get('/exist/:username')
-    @OnUndefined(404)
-    async userExist(@Param('username') username: string, @Req() req: Request): Promise<boolean> {
-        LogsUtil.logRequest(req);
-        return await this.userService.userExist(username)
+        return await this.userService.getOneByUuid(uuid)
+        .catch(() => {
+            throw new NotFoundError("User not found.");
+        })
     }
 }
