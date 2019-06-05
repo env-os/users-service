@@ -2,39 +2,49 @@ import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserRepository } from '../repositories/user.repository';
 import { User } from '../entities/user.entity';
-import { Tree } from 'typeorm';
+import { UserDto } from '../dto/user.dto';
 
 @Service()
 export class UserService {
     constructor(
         @InjectRepository()
-        private readonly usersRepository: UserRepository,
+        private readonly userRepository: UserRepository,
     ) {}
 
-    public async createUser(uid: string, username: string, email: string, fullname: string, phone: string ) {
-        await this.usersRepository.save(new User(
-            uid,
-            username,
-            email,
-            fullname,
-            phone
-        ))
+    public async create(userDto: UserDto): Promise<void> {
+        var usernameTest = null;
+        if (!/\s/.test(userDto.username)) {
+            usernameTest = userDto.username
+        }
+        await this.userRepository.create(new User(
+            usernameTest,
+            userDto.fullname,
+            userDto.email,
+            userDto.phone
+        )).catch(function(error) {
+            throw("Error: whitespace in the username");
+        });
     }
 
-    public async getAllUsers(): Promise<User[]>{
-        return await this.usersRepository.find();
+    public async delete(username: string): Promise<void> {
+        await this.userRepository.getOneByUsername(username)
+        .then((user) => {
+            if(user != null){
+                this.userRepository.delete(user);
+            }
+        })
     }
 
-    public async getUserByUsername(username: string): Promise<User>{
-        return await this.usersRepository.getOneByUsername(username);
+    public async getAll(): Promise<User[] | undefined>{
+        return await this.userRepository.getAll();
     }
 
-    public async userExist(username: string): Promise<boolean> {
-        const user = await this.usersRepository.getOneByUsername(username);
+    public async getOneByUsername(username: string): Promise<User | undefined>{
+        return await this.userRepository.getOneByUsername(username);
+    }
+
+    public async userExist(username: string): Promise<boolean | undefined> {
+        const user = await this.userRepository.getOneByUsername(username);
         return user != null ? true: false;
-    }
-
-    public async deleteUser(username: string) {
-        return await this.usersRepository.delete({ username })
     }
 }
