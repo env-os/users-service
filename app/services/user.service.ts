@@ -12,44 +12,25 @@ export class UserService {
     ) {}
 
     public async create(userDto: UserDto): Promise<void> {
-        var usernameTest = null;
-        if (!/\s/.test(userDto.username)) {
-            usernameTest = userDto.username
-        }
         await this.userRepository.create(new User(
-            usernameTest,
-            userDto.fullname,
+            userDto.uuid,
+            userDto.username,
             userDto.email,
-            userDto.phone
-        )).catch(function(error) {
-            if(usernameTest==null){
-                throw("Error: whitespace on the username")
-            }
-            else{
-                throw(error);
-            }
-        });
+            userDto.fullname,
+            userDto.phone,
+        ))
     }
 
-    public async delete(username: string): Promise<void> {
-        await this.userRepository.getOneByUsername(username)
-        .then((user) => {
-            if(user != null){
-                this.userRepository.delete(user);
-            }
-        })
+    public async delete(uuid: string): Promise<void> {
+        await this.userRepository.getOneByUuid(uuid)
+        .then((user) => this.userRepository.delete(user));
     }
 
-    public async getAll(): Promise<User[] | undefined>{
+    public async getAll(): Promise<User[]>{
         return await this.userRepository.getAll();
     }
 
-    public async getOneByUsername(username: string): Promise<User | undefined>{
-        return await this.userRepository.getOneByUsername(username);
-    }
-
-    public async userExist(username: string): Promise<boolean | undefined> {
-        const user = await this.userRepository.getOneByUsername(username);
-        return user != null ? true: false;
+    public async getOneByUuid(uuid: string): Promise<User> {
+        return await this.userRepository.getOneByUuid(uuid);
     }
 }
