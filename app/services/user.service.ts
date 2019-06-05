@@ -22,7 +22,12 @@ export class UserService {
             userDto.email,
             userDto.phone
         )).catch(function(error) {
-            throw("Error: whitespace in the username");
+            if(usernameTest==null){
+                throw("Error: whitespace on the username")
+            }
+            else{
+                throw(error);
+            }
         });
     }
 
