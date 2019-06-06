@@ -1,6 +1,7 @@
 .directory
 .vscode
 build
+ormconfig.json
 
 # Logs
 logs
