@@ -1,0 +1,94 @@
+swagger: "2.0"
+info:
+  description: "Microservice che si occupa della gestione degli utenti [https://github.com/env-os/users-service]"
+  version: "1.0.0"
+  title: "users-service"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+paths:
+  /users:
+    post:
+      summary: "Aggiunge un nuovo utente all'interno del sistema"
+      description: "Questa chiamata POST consente di registrare un nuovo utente all'interno del database."
+      operationId: "create"
+      consumes:
+      - "application/json"
+      parameters: 
+      - in: "body"
+        name: "body"
+        description: "Aggiungere utente all'interno di un database."
+        required: true
+        schema:
+          $ref: '#/definitions/Users'
+      responses:
+        201:
+          description: Created
+        400:
+          description: "L'utente non è stato creato"
+    get:
+      summary: "Ricava le informazioni di tutti gli utenti"
+      description: ""
+      operationId: "getAll"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Users'
+        404:
+          description: "All'interno del database non ci sono utenti"
+  
+  /users/{uuid}:
+    get:
+      summary: "Ricava tutte le informazioni dell'utente passando il suo l'uuid"
+      description: ""
+      operationId: "getOneByUuid"
+      parameters: 
+      - name: "uuid"
+        in: "path"
+        description: "uuid dell'utente che si vuole visualizzare"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Users'
+            
+    delete: 
+      summary: "Elimina un utente dal database passando il suo uuid"
+      description: ""
+      operationId: "delete"
+      parameters: 
+      - name: "uuid"
+        in: "path"
+        description: "l'uuid dell'utente che si vuole eliminare"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: OK
+        404:
+          description: "L'utente inserito non esiste"
+          
+
+definitions:
+  Users:
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: string
+      username:
+        type: string
+        format: string
+      email:
+        type: string
+        format: string
+      fullname:
+        type: string
+        format: string
+      phone:
+        type: string
+        format: string
