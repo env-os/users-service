@@ -22,7 +22,25 @@ export class UserRepository extends AbstractRepository<User>{
 
     public getOneByUuid(uuid: string): Promise<User> {
         return this.repository.findOneOrFail({
-            where: {uuid: uuid}
+            where: {uuid: uuid},
+            join: {
+                alias: "user",
+                leftJoinAndSelect: {
+                    users: "user.areas",
+                }
+            },
+        })
+    }
+
+    public getOneByEmail(email: string): Promise<User> {
+        return this.repository.findOneOrFail({
+            where: {email: email},
+            join: {
+                alias: "user",
+                leftJoinAndSelect: {
+                    users: "user.areas",
+                }
+            },
         })
     }
 }

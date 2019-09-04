@@ -49,4 +49,14 @@ export class UserController {
             throw new NotFoundError("User not found.");
         })
     }
+
+    @Get('/email/:email')
+    @OnUndefined(404)
+    public async getOneByEmail(@Param('email') email: string, @Req() req: Request): Promise<User> {
+        LogsUtil.logRequest(req);
+        return await this.userService.getOneByEmail(email)
+        .catch(() => {
+            throw new NotFoundError("User not found.");
+        })
+    }
 }

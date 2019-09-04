@@ -18,6 +18,7 @@ export class UserService {
             userDto.email,
             userDto.fullname,
             userDto.phone,
+            userDto.areas,
         ))
     }
 
@@ -32,5 +33,9 @@ export class UserService {
 
     public async getOneByUuid(uuid: string): Promise<User> {
         return await this.userRepository.getOneByUuid(uuid);
+    }
+
+    public async getOneByEmail(email: string): Promise<User> {
+        return await this.userRepository.getOneByEmail(email);
     }
 }
