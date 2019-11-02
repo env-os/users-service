@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import 'cors';
 import { useContainer as typeormUseContainer, createConnection } from 'typeorm';
 import { Container } from 'typedi';
 import { createExpressServer, useContainer as routingUseContainer } from 'routing-controllers';
@@ -12,6 +13,7 @@ routingUseContainer(Container)
 const port = process.env.PORT || 3000;
 
 const app = createExpressServer({
+    cors: true,
     controllers: [UserController, AreaController],
     classTransformer: true,
     validation: true

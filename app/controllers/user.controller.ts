@@ -1,4 +1,4 @@
-import { Post, JsonController, Body, Get, Param, Delete, Req, OnUndefined, BadRequestError, HttpError, NotFoundError } from 'routing-controllers';
+import { Post, JsonController, Body, Get, Param, Delete, Req, OnUndefined, BadRequestError, NotFoundError } from 'routing-controllers';
 import { UserService } from '../services/user.service';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities/user.entity';
